@@ -16,6 +16,8 @@ class Lexical:
     #TODO: add support for negative numbers
     @staticmethod
     def is_numerical(input_: str) -> bool:
+        if input_ == '':
+            return False
         for char in list(input_):
             if char not in [*Lexical.numbers, Lexical.float_point, Lexical.negative]:
                 return False
@@ -27,7 +29,9 @@ class Lexical:
         stack = []
         input_ += Lexical.EOL
         op_last = True
+        all_chars = ''
         for char in input_:
+            all_chars += char
             if char == Lexical.EOL:
                 if stack:
                     result.append(''.join(stack))
@@ -42,14 +46,17 @@ class Lexical:
                 stack.append(char)
                 continue
             if char in Lexical.operators:
-                print(char, stack)
                 if char in Lexical.pre_negative_number_op and op_last == False:
                     op_last = True
                 elif stack:
                     op_last = False
-                result.append(''.join(stack))
-                stack.clear()
-                result.append(char)
+                if Lexical.is_numerical(''.join(stack)):
+                    result.append(''.join(stack))
+                    stack.clear()
+                    result.append(char)
+                else:
+                    result.append(char)
+                    stack.clear()
                 continue
         return result
 
