@@ -51,6 +51,11 @@ class EvalAutomata:
             stack.append(token)
             typed_stack.append(token.type)
             while True:
+                # # human readable stack output
+                # print('-'*20)
+                # for i in stack:
+                #     print(i.token, i.type)
+                # print('-'*20)
                 result = EvalAutomata.pattern_matching(typed_stack)
                 if not result:
                     break
@@ -73,7 +78,8 @@ class EvalAutomata:
                     #TODO: add some math functions
                     stack.append(pattern_result)
                     typed_stack.append(pattern_result.type)
-        
+                
+
         return float(stack[0].token)
         
 

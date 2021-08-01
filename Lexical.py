@@ -18,6 +18,9 @@ class Lexical:
     def is_numerical(input_: str) -> bool:
         if input_ == '':
             return False
+        # input '-' is not a number
+        if len(input_) == 1 and input_ == '-':
+            return False
         for char in list(input_):
             if char not in [*Lexical.numbers, Lexical.float_point, Lexical.negative]:
                 return False
