@@ -26,6 +26,7 @@ class Lexical:
                 return False
         return True
 
+    #TODO: add a**b
     @staticmethod
     def tokenize(input_: str) -> List[str]:
         result: List[str] = []
@@ -33,21 +34,35 @@ class Lexical:
         input_ += Lexical.EOL
         op_last = True
         all_chars = ''
+
+        function_name = ''
+
         for char in input_:
             all_chars += char
+            # checking for EOL and space
             if char == Lexical.EOL:
                 if stack:
                     result.append(''.join(stack))
                 continue
-            if char not in Lexical.eligible_chars:
-                raise ValueError("Syntax error")
             if char == Lexical.space:
                 continue
+            
+            # fishing for functions 
+            if char.isalpha():
+                function_name += char
+                continue
+            if function_name != '' and char == '(':
+                function_name += '('
+                result.append(function_name)
+                function_name = ''
+                continue
+            # fishing for numerical values
             # last condition takes current - sign as part of negative number
             if char in Lexical.numbers or char == Lexical.float_point or (op_last and char == Lexical.negative):
                 op_last = False
                 stack.append(char)
                 continue
+
             if char in Lexical.operators:
                 if char in Lexical.pre_negative_number_op and op_last == False:
                     op_last = True
@@ -74,8 +89,11 @@ class Lexical:
         for no, tkn in enumerate(text_tokens):
             if Lexical.is_numerical(tkn):
                 new_token = Token(tkn, "NUM", no)
+            # math functions
+            elif tkn != '(' and tkn[-1] == '(':
+                new_token = Token(tkn, "FOO", no)
             else:
                 new_token = Token(tkn, text_2_type[tkn], no)
             result_tokens.append(new_token)
-
+        print(result_tokens)
         return result_tokens

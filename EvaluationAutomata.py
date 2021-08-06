@@ -1,8 +1,17 @@
 from typing import *
 from Token import Token
 from Grammar import Grammar
+from MathFunctions import MathFunctions
 
 class EvalAutomata:
+    #TODO: modular math functions need to be tested
+    def __init__(self, math_functions:MathFunctions = None) -> None:
+        self.math_functions = None
+        if math_functions is None:
+            self.math_functions = MathFunctions()
+        else:
+            self.math_functions = math_functions
+
     @staticmethod
     def pattern_matching(stack:List[Token]):
         for rule in Grammar.prod_priority:
@@ -41,21 +50,23 @@ class EvalAutomata:
         val_b = float(data[2].token)
         return Token(str(val_a/val_b),'NUM',None)
 
+    def FOO(self, data:List[Token]):
+        for n, token in enumerate(data):
+            print(n,':',token)
+        available_functions:Dict[str,function] = self.math_functions.functions
+        for foo_title in available_functions.keys():
+            calculate_function = available_functions[foo_title]
+            if foo_title == str(data[0].token):
+                val = calculate_function(float(data[1].token))
+        return Token(str(val), 'NUM', None)
 
-
-    @staticmethod
-    def eval(input_: List[Token]):
+    def eval(self, input_: List[Token]):
         stack = []
         typed_stack = []
         for token in input_:
             stack.append(token)
             typed_stack.append(token.type)
             while True:
-                # # human readable stack output
-                # print('-'*20)
-                # for i in stack:
-                #     print(i.token, i.type)
-                # print('-'*20)
                 result = EvalAutomata.pattern_matching(typed_stack)
                 if not result:
                     break
@@ -75,10 +86,11 @@ class EvalAutomata:
                         pattern_result = EvalAutomata.MUL(data)
                     elif rule == 'div':
                         pattern_result = EvalAutomata.DIV(data)
-                    #TODO: add some math functions
+                    elif rule == 'foo':
+                        pattern_result = self.FOO(data)
+
                     stack.append(pattern_result)
                     typed_stack.append(pattern_result.type)
-                
 
         return float(stack[0].token)
         
